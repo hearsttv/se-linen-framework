@@ -24,13 +24,10 @@ class LinenResult(unittest.TestResult):
                     getattr(testcase, "printable_url", "Unknown error"),
                     getattr(testcase, "session_id", None)
                 ),
-                "value": value
+                "value": json.dumps(value, indent=4)
             }
             
-            print(
-                json.dumps(report, indent=4),
-                file=sys.stdout
-            )
+            print(json.dumps(report), file=sys.stdout)
 
 
     @failfast
