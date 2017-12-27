@@ -5,6 +5,11 @@ class LinenResult(unittest.TestResult):
 
     truncation_threshold = 255
 
+
+    class Better(yaml.Dumper):
+        def increase_indent(self, flow=False, indentless= False):
+            return super(LinenResult.Better, self).increase_indent(flow, False)
+
     def printErrors(self):
         tmp = self.failures + self.errors
         if tmp:
@@ -24,7 +29,8 @@ class LinenResult(unittest.TestResult):
                     getattr(testcase, "printable_url", "Unknown error"),
                     getattr(testcase, "session_id", None)
                 ),
-                "value": json.dumps(value, indent=4)
+                "value": yaml.dump(value, Dumper=self.Better,
+                    allow_unicode=True, default_flow_style=False)
             }
             
             print(json.dumps(report), file=sys.stdout)
