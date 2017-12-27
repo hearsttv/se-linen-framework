@@ -20,7 +20,10 @@ class LinenResult(unittest.TestResult):
                 value["errors"] = errors
             
             report = {
-                "title": testcase.printable_url + ": " + testcase.session_id,
+                "title": "%s: %s" %(
+                    getattr(testcase, "printable_url", "Unknown error"),
+                    getattr(testcase, "session_id", None)
+                ),
                 "value": value
             }
             

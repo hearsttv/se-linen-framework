@@ -106,7 +106,7 @@ class SeDriverTest(unittest.TestCase):
             printable_url = "http://%s%s" % (cls.config.get("host"), cls.config.get("path"))
 
         url = cls.get_url_maybe_credentials(printable_url)
-
+        
         return printable_url, url
     
     def find_el(self, selector):
