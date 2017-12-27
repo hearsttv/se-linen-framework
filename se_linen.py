@@ -1,6 +1,6 @@
 import unittest, sys
+import linen_result
 from selenium import webdriver
-# TODO: learn how to do actual decorators
 from functools import wraps
 
 class FooRunner():
@@ -8,7 +8,10 @@ class FooRunner():
         print(test)
 
 def test_main(cls):
-    unittest.TextTestRunner(verbosity=2).run(
+    unittest.TextTestRunner(
+        resultclass=linen_result.LinenResult,
+        verbosity=2
+    ).run(
     #FooRunner().run(
         unittest.TestSuite([
             unittest.TestLoader().loadTestsFromTestCase(x) for x in [
@@ -118,7 +121,8 @@ class SeDriverTest(unittest.TestCase):
         el = self.find_el(selector)
         el_val = el.get_attribute(attr)
         assert_text = "%s Found \"%s\" instead." % (assert_label, el_val) 
-        self.assertEqual(el_val, expected, assert_text)
+        #self.assertEqual(el_val, expected, assert_text)
+        assert el_val == expected, assert_text
 
     def assert_el_relative_to_el(self, sel1, position, sel2, assert_text):
         el1 = self.find_el(sel1)

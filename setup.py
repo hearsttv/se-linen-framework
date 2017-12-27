@@ -8,5 +8,5 @@ setup(name='se_linen',
       author='Rachel Fuller',
       author_email='rlfuller@gmail.com',
       url='https://github.com/rlfuller/se-linen-framework',
-      py_modules=['se_linen'],
+      py_modules=['se_linen','linen_result'],
      )
