@@ -1,4 +1,4 @@
-import unittest, sys, json
+import unittest, sys, json, time
 import linen_result
 from selenium import webdriver
 from functools import wraps
@@ -20,7 +20,7 @@ def test_main(cls):
         ])
     )
 
-def retryIfException(exception_types, attempts = 10):
+def retryIfException(exception_types, attempts = 10, sleep = 0):
     class M: pass
     M.attempts = attempts
     def deco(f):
@@ -30,6 +30,7 @@ def retryIfException(exception_types, attempts = 10):
                 return f(self, *args,**kwargs)
             except tuple(exception_types) as e:
                 if M.attempts > 0:
+                    time.sleep(sleep)
                     return wrapper(self, *args, **kwargs)
                 raise e
         return wrapper
