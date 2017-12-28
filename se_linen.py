@@ -114,6 +114,7 @@ class SeDriverTest(unittest.TestCase):
         
         return printable_url, url
     
+    #takes a selector, returns a web element
     def find_el(self, selector):
         if type(selector) != str:
             return selector
@@ -122,12 +123,30 @@ class SeDriverTest(unittest.TestCase):
 
 
     #selenium utility methods
-    def assert_el_attr_equals(self, selector, attr, expected, assert_label):
+    def assert_el_relative_to_container(self, container_sel, position, el_sel, assert_text):
+        container = self.find_el(container_sel)
+        container_halfway = container.size.get("width") / 2
+
+        element = self.find_el(el_sel)
+        element_left_x = element.location.get("x")
+
+        if position == "left":
+            comparison_element = el_right_x = element.location.get("x") + element.size.get("width")
+            result = comparison_element <= container_halfway
+
+        if position == "right":
+            comparison_element = element_left_x
+            result = comparison_element >= container_halfway
+
+        assert result, assert_text % (container_halfway, comparison_element)
+
+
+    def el_attr_equals(self, selector, attr, expected, pipe = lambda x: x):
         el = self.find_el(selector)
         el_val = el.get_attribute(attr)
-        assert_text = "%s Found \"%s\" instead." % (assert_label, el_val) 
-        #self.assertEqual(el_val, expected, assert_text)
-        assert el_val == expected, assert_text
+        val = pipe(el_val)
+        return val == expected, val
+    
 
     def assert_el_relative_to_el(self, sel1, position, sel2, assert_text):
         el1 = self.find_el(sel1)
