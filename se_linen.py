@@ -26,10 +26,12 @@ def retryIfException(exception_types, attempts = 10, sleep = 0):
     def deco(f):
         def wrapper(self, *args, **kwargs):
             try:
-                M.attempts -= 1
                 return f(self, *args,**kwargs)
             except tuple(exception_types) as e:
-                print("FOOOOOOOO", M.attempts)
+                M.attempts -= 1
+                print("Caught exception of type %s: %s attempts remaining" % (
+                    str(type(e)), M.attempts
+                ), file=sys.stderr)
                 if M.attempts > 0:
                     time.sleep(sleep)
                     return wrapper(self, *args, **kwargs)
