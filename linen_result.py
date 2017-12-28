@@ -57,7 +57,6 @@ class LinenResult(unittest.TestResult):
         """Called when an error has occurred. 'err' is a tuple of values as
         returned by sys.exc_info().
         """
-        msg = self.err_msg(err)
         self.errors.append((test, self.truncated_str(str(err[1]))))
         self._mirrorOutput = True
         print(self.err_msg("ERROR", test, err), file=sys.stderr)
