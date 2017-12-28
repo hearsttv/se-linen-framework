@@ -29,6 +29,7 @@ def retryIfException(exception_types, attempts = 10, sleep = 0):
                 M.attempts -= 1
                 return f(self, *args,**kwargs)
             except tuple(exception_types) as e:
+                print("FOOOOOOOO", M.attempts)
                 if M.attempts > 0:
                     time.sleep(sleep)
                     return wrapper(self, *args, **kwargs)
