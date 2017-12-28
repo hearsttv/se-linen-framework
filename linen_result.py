@@ -15,8 +15,8 @@ class LinenResult(unittest.TestResult):
         if tmp:
             
             testcase = tmp[0][0]
-            failures = [x[1] for x in self.failures]
-            errors = [x[1] for x in self.errors]
+            failures = list(set([x[1] for x in self.failures]))
+            errors = list(set([x[1] for x in self.errors]))
 
             value = {}
             if failures:
