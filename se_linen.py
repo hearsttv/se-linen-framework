@@ -159,4 +159,5 @@ class SeDriverTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.driver.quit()
+        if hasattr(cls, "driver"):
+            cls.driver.quit()
