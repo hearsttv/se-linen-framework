@@ -61,10 +61,11 @@ class SeDriverTest(unittest.TestCase):
         if not cls.config:
             raise Exception("Config is empty!")
 
+        cls.printable_url, cls.url = cls.get_urls()
+        cls.__qualname__ += ": " + cls.printable_url
+        
         cls.driver = cls.create_driver()
         cls.session_id = cls.driver.session_id
-
-        cls.printable_url, cls.url = cls.get_urls()
         
         cls.driver.get(cls.url)
         

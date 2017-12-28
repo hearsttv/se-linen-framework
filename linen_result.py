@@ -14,9 +14,16 @@ class LinenResult(unittest.TestResult):
         tmp = self.failures + self.errors
         if tmp:
             
+            def unique_messages(msgs):
+                return list(
+                    set(
+                        [x[1].strip() for x in msgs]
+                    )
+                )
+
             testcase = tmp[0][0]
-            failures = list(set([x[1] for x in self.failures]))
-            errors = list(set([x[1] for x in self.errors]))
+            failures = unique_messages(self.failures)
+            errors = unique_messages(self.errors)
 
             value = {}
             if failures:
@@ -26,7 +33,7 @@ class LinenResult(unittest.TestResult):
             
             report = {
                 "title": "%s: %s" %(
-                    getattr(testcase, "printable_url", "Unknown error"),
+                    getattr(testcase, "printable_url", str(testcase)),
                     getattr(testcase, "session_id", None)
                 ),
                 "value": yaml.dump(value, Dumper=self.Better,
@@ -49,6 +56,7 @@ class LinenResult(unittest.TestResult):
         """Called when an error has occurred. 'err' is a tuple of values as
         returned by sys.exc_info().
         """
+        msg = "%s: %s" % (str(err[0]), str(err[1]))
         self.errors.append((test, self.truncated_str(str(err[1]))))
         self._mirrorOutput = True
 
