@@ -1,4 +1,4 @@
-import unittest, sys, json, time
+import unittest, sys, json, time, math
 import linen_result
 from selenium import webdriver
 from functools import wraps
@@ -125,13 +125,13 @@ class SeDriverTest(unittest.TestCase):
     #selenium utility methods
     def assert_el_relative_to_container(self, container_sel, position, el_sel, assert_text):
         container = self.find_el(container_sel)
-        container_halfway = container.size.get("width") / 2
+        container_halfway = container.location.get("x") + math.ceil(container.size.get("width") / 2)
 
         element = self.find_el(el_sel)
         element_left_x = element.location.get("x")
 
         if position == "left":
-            comparison_element = el_right_x = element.location.get("x") + element.size.get("width")
+            comparison_element = el_right_x = element_left_x + element.size.get("width")
             result = comparison_element <= container_halfway
 
         if position == "right":
@@ -147,37 +147,51 @@ class SeDriverTest(unittest.TestCase):
         val = pipe(el_val)
         return val == expected, val
     
+    #because values returned are context specific, for clarity, we have broken into 
+    #4 distinct methods
+    def el_below_el(self, top_sel, bottom_sel):
+        top_el = self.find_el(top_sel)
+        bottom_el = self.find_el(bottom_sel)
 
-    def assert_el_relative_to_el(self, sel1, position, sel2, assert_text):
-        el1 = self.find_el(sel1)
-        el2 = self.find_el(sel2)
+        top_el_lower_y = top_el.location.get("y") + top_el.size.get("height")
+        bottom_el_upper_y = bottom_el.location.get("y")
+
+        result = bottom_el_upper_y >= top_el_lower_y
+        return result, top_el_lower_y, bottom_el_upper_y
 
 
-        #el1 is below el2
-        if position == "below":
-            number1 = el1_top_y = el1.location.get("y")
-            number2 = el2_bottom_y = el2.location.get("y") + el2.size.get("height")
-            result = el1_top_y > el2_bottom_y
+    def el_above_el(self, top_sel, bottom_sel):
+        top_el = self.find_el(top_sel)
+        bottom_el = self.find_el(bottom_sel)
 
-        #el1 is above el2
-        if position == "above":
-            number1 = el1_bottom_y = el1.location.get("y") + el1.size.get("height")
-            number2 = el2_top_y = el2.location.get("y")
-            result =  el2_top_y > el1_bottom_y
+        top_el_lower_y = top_el.location.get("y") + top_el.size.get("height")
+        bottom_el_upper_y = bottom_el.location.get("y")
 
-        #el1 is to the left of el2
-        if position == "left":
-            number1 = el1_right_x = el1.location.get("x") + el1.size.get("width")
-            number2 = el2_left_x = el2.location.get("x")
-            result = el1_right_x < el2_left_x
+        result =  top_el_lower_y <= bottom_el_upper_y
+        return result, top_el_lower_y, bottom_el_upper_y
 
-        #el1 is to the right of el2
-        if position == "right":
-            number1 = el1_left_x = el1.location.get("x") 
-            number2 = el2_right_x = el2.location.get("x") + el2.size.get("width")
-            result = el1_left_x > el2_right_x
-            
-        assert result, assert_text % (number1, number2)
+
+    def el_left_of_el(self, left_sel, right_sel):
+        left_el = self.find_el(left_sel)
+        right_el = self.find_el(right_sel)
+
+        left_el_right_x = left_el.location.get("x") + left_el.size.get("width")
+        right_el_left_x = right_el.location.get("x")
+
+        result = left_el_right_x <= right_el_left_x
+        return result, left_el_right_x, right_el_left_x
+
+
+    def el_right_of_el(self, left_sel, right_sel):
+        left_el = self.find_el(left_sel)
+        right_el = self.find_el(right_sel)
+
+        left_el_right_x = left_el.location.get("x") + left_el.size.get("width")
+        right_el_left_x = right_el.location.get("x")
+
+        result =  right_el_left_x >= left_el_right_x
+        return result, left_el_right_x, right_el_left_x
+
 
     @classmethod
     def tearDownClass(cls):
