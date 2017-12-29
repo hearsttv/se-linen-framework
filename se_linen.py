@@ -1,6 +1,7 @@
 import unittest, sys, json, time, math
 import linen_result
 from selenium import webdriver
+from selenium.webdriver.support.color import Color
 from functools import wraps
 
 class FooRunner():
@@ -146,6 +147,14 @@ class SeDriverTest(unittest.TestCase):
         el_val = el.get_attribute(attr)
         val = pipe(el_val)
         return val == expected, val
+
+
+    def el_color_equals_hex(self, selector, hex_expected):
+        el = self.find_el(selector)
+        el_val = el.get_attribute(attr)
+        color = el_val.value_of_css_property("color")
+        hex_c = Color.from_string(color).hex
+        return hex_c == hex_expected, hex_c
     
     #because values returned are context specific, for clarity, we have broken into 
     #4 distinct methods
