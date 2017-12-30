@@ -18,9 +18,9 @@ class LinenResult(unittest.TestResult):
             
             def unique_messages(msgs):
                 return list(
-                    # set(
+                    set(
                         [x[1].strip() for x in msgs]
-                    # )
+                    )
                 )
 
             testcase = tmp[0][0]
