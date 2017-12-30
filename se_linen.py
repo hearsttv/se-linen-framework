@@ -9,17 +9,36 @@ class FooRunner():
         print(test)
 
 def test_main(cls):
-    unittest.TextTestRunner(
+    
+    suite = unittest.TestLoader().loadTestsFromTestCase(cls)
+    cls.suite = suite
+
+    runner = unittest.TextTestRunner(
         resultclass=linen_result.LinenResult,
         verbosity=2
-    ).run(
-    #FooRunner().run(
-        unittest.TestSuite([
-            unittest.TestLoader().loadTestsFromTestCase(x) for x in [
-                cls
-            ]
-        ])
     )
+
+    runner.run(suite)
+
+
+# def test_main(cls):
+
+#     cls.setUpDriver()
+#     for member_name in dir(cls):
+#         if member_name.startswith("generate_"):
+#             getattr(cls, member_name)()
+    
+#     unittest.TextTestRunner(
+#         resultclass=linen_result.LinenResult,
+#         verbosity=2
+#     ).run(
+#     #FooRunner().run(
+#         unittest.TestSuite([
+#             unittest.TestLoader().loadTestsFromTestCase(x) for x in [
+#                 cls
+#             ]
+#         ])
+#     )
 
 def retryIfException(exception_types, attempts = 10, sleep = 0):
     class M: pass
@@ -70,8 +89,23 @@ class SeDriverTest(unittest.TestCase):
         
         cls.driver = cls.create_driver()
         cls.session_id = cls.driver.session_id
-        
         cls.driver.get(cls.url)
+        # cls._generate_driver_dependent_tests()
+
+
+    # @classmethod
+    # def _generate_driver_dependent_tests(cls):
+    #     for member_name in dir(cls):
+    #         if member_name.startswith("generate_"):
+    #             # dynamically generate additional tests
+    #             getattr(cls, member_name)()
+    #     # clear the old tests out
+    #     del cls.suite._tests[:]
+    #     # add tests from the current state of the testcase class
+    #     cls.suite.addTests(
+    #         unittest.TestLoader().loadTestsFromTestCase(cls)
+    #     )
+        
         
     @classmethod
     def create_driver(cls):
@@ -116,11 +150,11 @@ class SeDriverTest(unittest.TestCase):
         return printable_url, url
     
     #takes a selector, returns a web element
-    def find_el(self, selector):
+    def find_el(self, selector, context = None):
         if type(selector) != str:
             return selector
 
-        return self.driver.find_element_by_css_selector(selector)
+        return (context or self.driver).find_element_by_css_selector(selector)
 
 
     #selenium utility methods
@@ -148,13 +182,25 @@ class SeDriverTest(unittest.TestCase):
         val = pipe(el_val)
         return val == expected, val
 
-
-    def el_color_equals_hex(self, selector, hex_expected):
+    #returns a css property
+    def get_el_css_property(self, selector, property, pipe = lambda x: x):
         el = self.find_el(selector)
-        el_val = el.get_attribute(attr)
-        color = el_val.value_of_css_property("color")
-        hex_c = Color.from_string(color).hex
-        return hex_c == hex_expected, hex_c
+        el_prop = el.value_of_css_property(property)
+        return pipe(el_prop)
+
+    #checks css property against a value
+    def el_property_equals(self, selector, property, expected, pipe = lambda x: x):
+        prop = self.get_el_css_property(selector, property, pipe)
+        return prop == expected, prop
+
+    #checks css property against a list
+    def el_property_in(self, selector, property, expected, pipe = lambda x: x):
+        prop = self.get_el_css_property(selector, property, pipe)
+        return prop in expected, prop
+
+    @staticmethod
+    def to_hex(color):
+        return Color.from_string(color).hex
     
     #because values returned are context specific, for clarity, we have broken into 
     #4 distinct methods
@@ -200,7 +246,6 @@ class SeDriverTest(unittest.TestCase):
 
         result =  right_el_left_x >= left_el_right_x
         return result, left_el_right_x, right_el_left_x
-
 
     @classmethod
     def tearDownClass(cls):

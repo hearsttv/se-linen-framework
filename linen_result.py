@@ -1,5 +1,7 @@
-import unittest, json, sys, yaml
+import unittest, json, sys, yaml, traceback
 from unittest.result import failfast
+
+debug = False
 
 class LinenResult(unittest.TestResult):
 
@@ -16,9 +18,9 @@ class LinenResult(unittest.TestResult):
             
             def unique_messages(msgs):
                 return list(
-                    set(
+                    # set(
                         [x[1].strip() for x in msgs]
-                    )
+                    # )
                 )
 
             testcase = tmp[0][0]
@@ -40,7 +42,11 @@ class LinenResult(unittest.TestResult):
                     allow_unicode=True, default_flow_style=False)
             }
             
-            print(json.dumps(report), file=sys.stdout)
+            if debug:
+                for error in value["errors"]:
+                    print(error)
+            else:
+                print(json.dumps(report), file=sys.stdout)
 
 
     @failfast
@@ -57,13 +63,28 @@ class LinenResult(unittest.TestResult):
         """Called when an error has occurred. 'err' is a tuple of values as
         returned by sys.exc_info().
         """
-        self.errors.append((test, self.truncated_str(str(err[1]))))
+        self.errors.append((test, "%s\n%s" % (
+            self.truncated_str(str(err[1])), "".join(traceback.format_tb(err[2]))
+        )))
         self._mirrorOutput = True
         print(self.err_msg("ERROR", test, err), file=sys.stderr)
 
     def addSuccess(self, test):
         msg = "%s... %s" % (str(test), "ok")
         print(msg, file=sys.stderr)
+
+    def addSubTest(self, test, subtest, err):
+        """Called at the end of a subtest.
+        'err' is None if the subtest ended successfully, otherwise it's a
+        tuple of values as returned by sys.exc_info().
+        """
+        if err:
+            result_msg = self.err_msg("FAILED", subtest, err)
+        else:
+            result_msg = "%s... %s" % (str(subtest), "ok")
+
+        print("%s" % result_msg, file=sys.stderr)
+        super(LinenResult, self).addSubTest(test, subtest, err)
 
     def err_msg(self, type, test, err):
         return "%s... %s: %s\n    %s" % (
