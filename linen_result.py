@@ -30,8 +30,9 @@ class LinenResult(unittest.TestResult):
             value = {}
             if failures:
                 value["failures"] = failures
-            if errors:
-                value["errors"] = errors
+            if debug:
+                if errors:
+                    value["errors"] = errors
             
             report = {
                 "title": "%s: %s" %(
