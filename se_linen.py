@@ -41,20 +41,18 @@ def test_main(cls):
 #     )
 
 def retryIfException(exception_types, attempts = 10, sleep = 0):
-    class M: pass
-    M.attempts = attempts
     def deco(f):
-        def wrapper(self, *args, **kwargs):
+        def wrapper(self, *args, attempts=attempts, **kwargs):
             try:
                 return f(self, *args,**kwargs)
             except tuple(exception_types) as e:
-                M.attempts -= 1
+                attempts -= 1
                 print("Caught exception of type %s: %s attempts remaining" % (
-                    str(type(e)), M.attempts
+                    str(type(e)), attempts
                 ), file=sys.stderr)
-                if M.attempts > 0:
+                if attempts > 0:
                     time.sleep(sleep)
-                    return wrapper(self, *args, **kwargs)
+                    return wrapper(self, *args, attempts=attempts, **kwargs)
                 raise e
         return wrapper
     return deco
