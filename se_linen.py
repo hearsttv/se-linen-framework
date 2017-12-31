@@ -48,7 +48,7 @@ def retryIfException(exception_types, attempts = 10, sleep = 0):
             except tuple(exception_types) as e:
                 attempts -= 1
                 print("Caught exception of type %s: %s attempts remaining" % (
-                    str(type(e)), attempts
+                    type(e).__qualname__, attempts
                 ), file=sys.stderr)
                 if attempts > 0:
                     time.sleep(sleep)

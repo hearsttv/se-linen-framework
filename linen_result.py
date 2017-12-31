@@ -47,26 +47,32 @@ class LinenResult(unittest.TestResult):
                     print(error)
             else:
                 print(json.dumps(report), file=sys.stdout)
-
+    def appendToFailures(self, test, err):
+        self.failures.append((test, "%s" %(
+            self.truncated_str(str(err[1]))
+        )))
 
     @failfast
     def addFailure(self, test, err):
         """Called when an error has occurred. 'err' is a tuple of values as
         returned by sys.exc_info()."""
         #self.failures.append((test, self._exc_info_to_string(str(err), test)))
-        self.failures.append((test, str(err[1])))
+        self.appendToFailures(test, err)
         self._mirrorOutput = True
         print(self.err_msg("FAILED", test, err), file=sys.stderr)
+
+    def appendToErrors(self, test, err):
+        tb_str = "".join(traceback.format_tb(err[2])) if debug else ""
+        self.errors.append((test, "%s\n%s" % (
+            self.truncated_str(str(err[1])), tb_str
+        )))
 
     @failfast
     def addError(self, test, err):
         """Called when an error has occurred. 'err' is a tuple of values as
         returned by sys.exc_info().
         """
-        tb_str = "".join(traceback.format_tb(err[2])) if debug else ""
-        self.errors.append((test, "%s\n%s" % (
-            self.truncated_str(str(err[1])), tb_str
-        )))
+        self.appendToErrors(test, err)
         self._mirrorOutput = True
         print(self.err_msg("ERROR", test, err), file=sys.stderr)
 
@@ -80,12 +86,19 @@ class LinenResult(unittest.TestResult):
         tuple of values as returned by sys.exc_info().
         """
         if err:
-            result_msg = self.err_msg("FAILED", subtest, err)
+            if isinstance(err[1], AssertionError):
+                fail_type = "FAILURE"
+                self.appendToFailures(test, err)
+            else:
+                fail_type = "ERROR"
+                self.appendToErrors(test, err)
+
+            result_msg = self.err_msg(fail_type, subtest, err)
         else:
             result_msg = "%s... %s" % (str(subtest), "ok")
 
         print("%s" % result_msg, file=sys.stderr)
-        super(LinenResult, self).addSubTest(test, subtest, err)
+        #super(LinenResult, self).addSubTest(test, subtest, err)
 
     def err_msg(self, type, test, err):
         return "%s... %s: %s\n    %s" % (
