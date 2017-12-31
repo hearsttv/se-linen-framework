@@ -147,6 +147,7 @@ class SeDriverTest(unittest.TestCase):
         
         return printable_url, url
     
+    #selenium utility methods
     #takes a selector, returns a web element
     def find_el(self, selector, context = None):
         if type(selector) != str:
@@ -154,8 +155,6 @@ class SeDriverTest(unittest.TestCase):
 
         return (context or self.driver).find_element_by_css_selector(selector)
 
-
-    #selenium utility methods
     def assert_el_relative_to_container(self, container_sel, position, el_sel, assert_text):
         container = self.find_el(container_sel)
         container_halfway = container.location.get("x") + math.ceil(container.size.get("width") / 2)

@@ -63,7 +63,7 @@ class LinenResult(unittest.TestResult):
         """Called when an error has occurred. 'err' is a tuple of values as
         returned by sys.exc_info().
         """
-        tb_str = "".join(traceback.format_tb(err[2])) if Debug else ""
+        tb_str = "".join(traceback.format_tb(err[2])) if debug else ""
         self.errors.append((test, "%s\n%s" % (
             self.truncated_str(str(err[1])), tb_str
         )))
