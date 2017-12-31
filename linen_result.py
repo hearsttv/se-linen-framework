@@ -49,7 +49,7 @@ class LinenResult(unittest.TestResult):
                 print(json.dumps(report), file=sys.stdout)
     def appendToFailures(self, test, err):
         self.failures.append((test, "%s" %(
-            self.truncated_str(str(err[1]))
+            str(err[1])
         )))
 
     @failfast
