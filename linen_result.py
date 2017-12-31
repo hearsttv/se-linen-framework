@@ -42,8 +42,8 @@ class LinenResult(unittest.TestResult):
                     allow_unicode=True, default_flow_style=False)
             }
             
-            if debug:
-                for error in value["errors"]:
+            if debug and value.get("errors"):
+                for error in value.get("errors"):
                     print(error)
             else:
                 print(json.dumps(report), file=sys.stdout)
@@ -63,8 +63,9 @@ class LinenResult(unittest.TestResult):
         """Called when an error has occurred. 'err' is a tuple of values as
         returned by sys.exc_info().
         """
+        tb_str = "".join(traceback.format_tb(err[2])) if Debug else ""
         self.errors.append((test, "%s\n%s" % (
-            self.truncated_str(str(err[1])), "".join(traceback.format_tb(err[2]))
+            self.truncated_str(str(err[1])), tb_str
         )))
         self._mirrorOutput = True
         print(self.err_msg("ERROR", test, err), file=sys.stderr)
