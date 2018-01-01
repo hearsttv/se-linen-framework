@@ -23,7 +23,7 @@ class LinenResult(unittest.TestResult):
         def as_yaml(title, fields):
             return {
                 "title": title,
-                "fields": yaml.dump(fields, Dumper=self.Better, allow_unicode=True,
+                "value": yaml.dump(fields, Dumper=self.Better, allow_unicode=True,
                     default_flow_style=False)
             }
 
