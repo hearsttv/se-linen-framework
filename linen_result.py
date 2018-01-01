@@ -30,9 +30,8 @@ class LinenResult(unittest.TestResult):
             value = {}
             if failures:
                 value["failures"] = failures
-            if debug:
-                if errors:
-                    value["errors"] = errors
+            #if errors:
+            #    value["errors"] = errors
             
             report = {
                 "title": "%s: %s" %(
@@ -43,11 +42,13 @@ class LinenResult(unittest.TestResult):
                     allow_unicode=True, default_flow_style=False)
             }
             
-            if debug and value.get("errors"):
-                for error in value.get("errors"):
+            if debug and errors:
+                for error in errors:
                     print(error)
-            else:
+            elif self.failures:
                 print(json.dumps(report), file=sys.stdout)
+
+
     def appendToFailures(self, test, err):
         self.failures.append((test, "%s" %(
             str(err[1])
