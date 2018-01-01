@@ -13,40 +13,42 @@ class LinenResult(unittest.TestResult):
             return super(LinenResult.Better, self).increase_indent(flow, False)
 
     def printErrors(self):
+        def unique_messages(msgs):
+            return list(
+                set(
+                    [x[1].strip() for x in msgs]
+                )
+            )
+
+        def as_yaml(title, fields):
+            return {
+                "title": title,
+                "fields": yaml.dump(fields, Dumper=self.Better, allow_unicode=True,
+                    default_flow_style=False)
+            }
+
         tmp = self.failures + self.errors
         if tmp:
             
-            def unique_messages(msgs):
-                return list(
-                    set(
-                        [x[1].strip() for x in msgs]
-                    )
-                )
-            def as_yaml(s):
-                return yaml.dump(s, Dumper=self.Better, allow_unicode=True,
-                    default_flow_style=False)
-
             testcase = tmp[0][0]
             failures = unique_messages(self.failures)
             errors = unique_messages(self.errors)
 
-            value = {}
-            if failures:
-                value["failures"] = as_yaml(failures)
-            if errors:
-                value["errors"] = as_yaml(errors)
-            
+            title = "%s: %s" %(
+                getattr(testcase, "printable_url", str(testcase)),
+                getattr(testcase, "session_id", "No session created")
+            )
             report = {
-                "title": "%s: %s" %(
-                    getattr(testcase, "printable_url", str(testcase)),
-                    getattr(testcase, "session_id", "No session created")
-                ),
-                "value": value
+                "failures": as_yaml(title, failures)
+                "errors": as_yaml(title, errors)
             }
-            
+
             if debug and errors:
                 for error in errors:
                     print(error)
+                # Failures not needed because they will be reported as they occur
+                # and there's no need for a stacktrace since they're just
+                # AssertionErrors
             else:
                 print(json.dumps(report), file=sys.stdout)
 
