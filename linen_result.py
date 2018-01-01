@@ -22,6 +22,9 @@ class LinenResult(unittest.TestResult):
                         [x[1].strip() for x in msgs]
                     )
                 )
+            def as_yaml(s):
+                return yaml.dump(s, Dumper=self.Better, allow_unicode=True,
+                    default_flow_style=False)
 
             testcase = tmp[0][0]
             failures = unique_messages(self.failures)
@@ -29,23 +32,22 @@ class LinenResult(unittest.TestResult):
 
             value = {}
             if failures:
-                value["failures"] = failures
-            #if errors:
-            #    value["errors"] = errors
+                value["failures"] = as_yaml(failures)
+            if errors:
+                value["errors"] = as_yaml(errors)
             
             report = {
                 "title": "%s: %s" %(
                     getattr(testcase, "printable_url", str(testcase)),
                     getattr(testcase, "session_id", "No session created")
                 ),
-                "value": yaml.dump(value, Dumper=self.Better,
-                    allow_unicode=True, default_flow_style=False)
+                "value": value
             }
             
             if debug and errors:
                 for error in errors:
                     print(error)
-            elif self.failures:
+            else:
                 print(json.dumps(report), file=sys.stdout)
 
 
