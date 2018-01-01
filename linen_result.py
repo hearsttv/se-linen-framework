@@ -39,7 +39,7 @@ class LinenResult(unittest.TestResult):
                 getattr(testcase, "session_id", "No session created")
             )
             report = {
-                "failures": as_yaml(title, failures)
+                "failures": as_yaml(title, failures),
                 "errors": as_yaml(title, errors)
             }
 
