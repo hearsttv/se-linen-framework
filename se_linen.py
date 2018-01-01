@@ -172,13 +172,17 @@ class SeDriverTest(unittest.TestCase):
 
         assert result, assert_text % (container_halfway, comparison_element)
 
-
-    def el_attr_equals(self, selector, attr, expected, pipe = lambda x: x):
+    #returns an element attribute
+    def get_el_attr(self, selector, attr, pipe = lambda x: x):
         el = self.find_el(selector)
-        el_val = el.get_attribute(attr)
-        val = pipe(el_val)
-        return val == expected, val
+        el_attr = el.get_attribute(attr)
+        return pipe(el_attr)
 
+    #checks element attribute agains a value
+    def el_attr_equals(self, selector, attr, expected, pipe = lambda x: x):
+        attr = self.get_el_attr(selector, attr, pipe)
+        return attr == expected, attr
+        
     #returns a css property
     def get_el_css_property(self, selector, property, pipe = lambda x: x):
         el = self.find_el(selector)
