@@ -25,7 +25,7 @@ class LinenResult(unittest.TestResult):
                 "title": title,
                 "value": yaml.dump(fields, Dumper=self.Better, allow_unicode=True,
                     default_flow_style=False)
-            }
+            } if fields else None
 
         tmp = self.failures + self.errors
         if tmp:
