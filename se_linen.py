@@ -247,6 +247,11 @@ class SeDriverTest(unittest.TestCase):
         result =  right_el_left_x >= left_el_right_x
         return result, left_el_right_x, right_el_left_x
 
+    def el_attr_op(self, selector, attr, expected, op, pipe = lambda x: x):
+        el = self.find_el(selector)
+        val = pipe(selector.get_attribute(attr))
+        return getattr(operator, op)(val, expected), val
+
     @classmethod
     def tearDownClass(cls):
         if hasattr(cls, "driver"):
