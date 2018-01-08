@@ -1,5 +1,5 @@
 import unittest, sys, json, time, math
-import linen_result
+from linen_result import LinenResult
 from selenium import webdriver
 from selenium.webdriver.support.color import Color
 from functools import wraps
@@ -8,13 +8,13 @@ class FooRunner():
     def run(self, test):
         print(test)
 
-def test_main(cls):
+def test_main(cls, resultclass=LinenResult):
     
     suite = unittest.TestLoader().loadTestsFromTestCase(cls)
     cls.suite = suite
 
     runner = unittest.TextTestRunner(
-        resultclass=linen_result.LinenResult,
+        resultclass=resultclass,
         verbosity=2
     )
 

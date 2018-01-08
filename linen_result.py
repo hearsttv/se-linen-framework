@@ -12,6 +12,12 @@ class LinenResult(unittest.TestResult):
         def increase_indent(self, flow=False, indentless= False):
             return super(LinenResult.Better, self).increase_indent(flow, False)
 
+    def get_title(self, testcase):
+        return "%s: %s" %(
+            getattr(testcase, "printable_url", str(testcase)),
+            getattr(testcase, "session_id", "No session created")
+        )
+
     def printErrors(self):
         def unique_messages(msgs):
             return list(
@@ -34,10 +40,7 @@ class LinenResult(unittest.TestResult):
             failures = unique_messages(self.failures)
             errors = unique_messages(self.errors)
 
-            title = "%s: %s" %(
-                getattr(testcase, "printable_url", str(testcase)),
-                getattr(testcase, "session_id", "No session created")
-            )
+            title = self.get_title(testcase)
             report = {
                 "failures": as_yaml(title, failures),
                 "errors": as_yaml(title, errors)
