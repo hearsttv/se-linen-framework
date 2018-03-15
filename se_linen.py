@@ -3,6 +3,7 @@ from linen_result import LinenResult
 from selenium import webdriver
 from selenium.webdriver.support.color import Color
 from functools import wraps
+from urllib.parse import quote
 
 class FooRunner():
     def run(self, test):
