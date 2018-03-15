@@ -252,6 +252,13 @@ class SeDriverTest(unittest.TestCase):
         val = pipe(selector.get_attribute(attr))
         return getattr(operator, op)(val, expected), val
 
+    def get_matching_class(sel_or_el, search_str):
+        class_list = self.get_el_attr(sel_or_el, "class")
+        return next(
+            filter(lambda x: search_str in x, class_list.split(" ")),
+            None
+        )
+
     @classmethod
     def tearDownClass(cls):
         if hasattr(cls, "driver"):
