@@ -21,6 +21,7 @@ class LinenResult(unittest.TestResult):
     def printErrors(self):
         def unique_messages(msgs):
             a = []
+            msg = None
             for x in msgs:
                 msg = x[1].strip()
                 if len(x) > 2:
