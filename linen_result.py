@@ -100,7 +100,7 @@ class LinenResult(unittest.TestResult):
                 self.appendToFailures(test, err)
             else:
                 fail_type = "ERROR"
-                self.appendToErrors(test, err)
+                self.appendToErrors(subtest, err)
 
             result_msg = self.err_msg(fail_type, subtest, err)
         else:
