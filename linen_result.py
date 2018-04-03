@@ -57,7 +57,7 @@ class LinenResult(unittest.TestResult):
 
 
     def appendToFailures(self, test, err):
-        self.failures.append((test, "%s" %(
+        self.failures.append((test, "%s" % (
             str(err[1])
         )))
 
@@ -72,8 +72,8 @@ class LinenResult(unittest.TestResult):
 
     def appendToErrors(self, test, err):
         tb_str = "".join(traceback.format_tb(err[2])) if debug else ""
-        self.errors.append((test, "%s\n%s" % (
-            self.truncated_str(str(err[1])), tb_str
+        self.errors.append((test, "%s:\n%s\n%s" % (
+            str(test), self.truncated_str(str(err[1])), tb_str
         )))
 
     @failfast
