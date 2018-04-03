@@ -99,7 +99,7 @@ class LinenResult(unittest.TestResult):
         if err:
             if isinstance(err[1], AssertionError):
                 fail_type = "FAILURE"
-                self.appendToFailures(test, err)
+                self.appendToFailures(test, err, subtest)
             else:
                 fail_type = "ERROR"
                 self.appendToErrors(test, err, subtest)
