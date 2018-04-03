@@ -20,11 +20,13 @@ class LinenResult(unittest.TestResult):
 
     def printErrors(self):
         def unique_messages(msgs):
-            return list(
-                set(
-                    [x[1].strip() for x in msgs]
-                )
-            )
+            a = []
+            for x in msgs:
+                msg = x[1].strip()
+                if len(x) > 2:
+                    msg = "%s:\n%s" % (str(x[2]), msg)
+            a.append(msg)
+            return list(set(a))
 
         def as_yaml(title, fields):
             return {
@@ -70,11 +72,11 @@ class LinenResult(unittest.TestResult):
         self._mirrorOutput = True
         print(self.err_msg("FAILED", test, err), file=sys.stderr)
 
-    def appendToErrors(self, test, err):
+    def appendToErrors(self, test, err, subtest=None):
         tb_str = "".join(traceback.format_tb(err[2])) if debug else ""
         self.errors.append((test, "%s:\n%s\n%s" % (
             str(test), self.truncated_str(str(err[1])), tb_str
-        )))
+        ), subtest))
 
     @failfast
     def addError(self, test, err):
@@ -100,7 +102,7 @@ class LinenResult(unittest.TestResult):
                 self.appendToFailures(test, err)
             else:
                 fail_type = "ERROR"
-                self.appendToErrors(subtest, err)
+                self.appendToErrors(test, err, subtest)
 
             result_msg = self.err_msg(fail_type, subtest, err)
         else:
