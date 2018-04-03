@@ -74,7 +74,7 @@ class LinenResult(unittest.TestResult):
 
     def appendToErrors(self, test, err, subtest=None):
         tb_str = "".join(traceback.format_tb(err[2])) if debug else ""
-        self.errors.append((test, "%s:\n%s\n%s" % (
+        self.errors.append((test, "%s\n%s" % (
             self.truncated_str(str(err[1])), tb_str
         ), subtest))
 
