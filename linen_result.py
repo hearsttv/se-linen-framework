@@ -57,11 +57,16 @@ class LinenResult(unittest.TestResult):
             else:
                 print(json.dumps(report), file=sys.stdout)
 
-
-    def appendToFailures(self, test, err):
+    def appendToFailures(self, test, err, subtest=None):
         self.failures.append((test, "%s" % (
             str(err[1])
-        )))
+        ), subtest))
+
+    def appendToErrors(self, test, err, subtest=None):
+        tb_str = "".join(traceback.format_tb(err[2])) if debug else ""
+        self.errors.append((test, "%s\n%s" % (
+            self.truncated_str(str(err[1])), tb_str
+        ), subtest))
 
     @failfast
     def addFailure(self, test, err):
@@ -71,12 +76,6 @@ class LinenResult(unittest.TestResult):
         self.appendToFailures(test, err)
         self._mirrorOutput = True
         print(self.err_msg("FAILED", test, err), file=sys.stderr)
-
-    def appendToErrors(self, test, err, subtest=None):
-        tb_str = "".join(traceback.format_tb(err[2])) if debug else ""
-        self.errors.append((test, "%s\n%s" % (
-            self.truncated_str(str(err[1])), tb_str
-        ), subtest))
 
     @failfast
     def addError(self, test, err):
