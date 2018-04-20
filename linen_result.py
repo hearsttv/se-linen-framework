@@ -23,7 +23,7 @@ class LinenResult(unittest.TestResult):
             a = []
             for x in msgs:
                 msg = x[1].strip()
-                if len(x) > 2:
+                if len(x) > 2 and x[2] is not None:
                     msg = "%s:\n%s" % (str(x[2]), msg)
                 a.append(msg)
             return list(set(a))
