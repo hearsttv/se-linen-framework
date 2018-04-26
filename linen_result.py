@@ -1,12 +1,10 @@
 import unittest, json, sys, yaml, traceback
 from unittest.result import failfast
 
-debug = False
-
 class LinenResult(unittest.TestResult):
 
     truncation_threshold = 255
-
+    debug = False
 
     class Better(yaml.Dumper):
         def increase_indent(self, flow=False, indentless= False):
@@ -48,7 +46,7 @@ class LinenResult(unittest.TestResult):
                 "errors": as_yaml(title, errors)
             }
 
-            if debug and errors:
+            if self.debug and errors:
                 for error in errors:
                     print(error)
                 # Failures not needed because they will be reported as they occur
@@ -63,7 +61,7 @@ class LinenResult(unittest.TestResult):
         ), subtest))
 
     def appendToErrors(self, test, err, subtest=None):
-        tb_str = "".join(traceback.format_tb(err[2])) if debug else ""
+        tb_str = "".join(traceback.format_tb(err[2])) if self.debug else ""
         self.errors.append((test, "%s\n%s" % (
             self.truncated_str(str(err[1])), tb_str
         ), subtest))
