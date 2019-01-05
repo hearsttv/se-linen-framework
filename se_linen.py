@@ -142,7 +142,7 @@ class SeDriverTest(unittest.TestCase):
         if cls.config.get("dynamic-url"):
             printable_url = cls.config.get("dynamic-url")
         else:
-            printable_url = "http://%s%s" % (cls.config.get("host"), cls.config.get("path"))
+            printable_url = "https://%s%s" % (cls.config.get("host"), cls.config.get("path"))
 
         url = cls.get_url_maybe_credentials(printable_url)
         
