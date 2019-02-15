@@ -83,7 +83,7 @@ class SeDriverTest(unittest.TestCase):
         if not cls.config:
             raise Exception("Config is empty!")
 
-        cls.printable_url, cls.url = cls.get_urls()
+        cls.printable_url, cls.url, cls.base_url = cls.get_urls()
         cls.__qualname__ = "%s: \"%s\"" % (cls.__qualname__, cls.printable_url)
         
         cls.driver = cls.create_driver()
@@ -145,8 +145,10 @@ class SeDriverTest(unittest.TestCase):
             printable_url = "https://%s%s" % (cls.config.get("host"), cls.config.get("path"))
 
         url = cls.get_url_maybe_credentials(printable_url)
-        
-        return printable_url, url
+
+        base_url = cls.get_url_maybe_credentials("https://" + cls.config.get("host") + "/")
+
+        return printable_url, url, base_url
     
     #selenium utility methods
     #takes a selector, returns a web element
