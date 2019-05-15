@@ -123,6 +123,8 @@ class SeDriverTest(unittest.TestCase):
                 command_executor='http://%s/wd/hub' % (se_config.get("host")),
                 desired_capabilities=se_config.get("capabilities"))
 
+        driver.implicitly_wait(10)
+
         return driver
 
     @classmethod
